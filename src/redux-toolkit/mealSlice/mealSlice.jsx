@@ -4,7 +4,8 @@ import instance from "../../http/settings.jsx";
 const initialState = {
     latest: [],
     infoMeal: [],
-    popular: []
+    popular: [],
+  popularInfo: []
 }
 
 export const getLatestMeal = createAsyncThunk(
@@ -52,6 +53,19 @@ export const getPopular = createAsyncThunk(
     }
 )
 
+export const getPopularInfo = createAsyncThunk(
+  'popularInfo/getPopularInfo',
+  async (elem, {rejectWithValue, dispatch}) => {
+    try{
+      const result = await instance.get(`filter.php?i=${elem}`)
+      dispatch(popularMealInfo(result.data.meals))
+    }catch (error) {
+      rejectWithValue(error.message)
+    }
+  }
+)
+
+
 const mealSlice = createSlice({
     name: 'meal',
     initialState,
@@ -64,14 +78,18 @@ const mealSlice = createSlice({
         },
         popularMeal: (state, action) => {
             state.popular = action.payload;
-        }
+        },
+      popularMealInfo: (state, action) => {
+          state.popularInfo = action.payload;
+      }
     }
 })
 
 export const {
     latestMeal,
     infoIngrediendMeal,
-    popularMeal
+    popularMeal,
+    popularMealInfo
 } = mealSlice.actions;
 
 export default mealSlice.reducer;
